@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { cakes } from "@/data/cakes";
+import { useCart } from "@/contexts/CartContext";
 
 // SVG cake patterns for use in place of actual images
 const cakeSvgs: Record<string, JSX.Element> = {
@@ -91,6 +92,7 @@ const cakeSvgs: Record<string, JSX.Element> = {
 
 const Shop = () => {
   const [filter, setFilter] = useState("all");
+  const { addToCart } = useCart();
 
   const filteredCakes = cakes.filter(cake => 
     filter === "all" || cake.category === filter
@@ -177,7 +179,10 @@ const Shop = () => {
                     )}
                   </div>
                   <p className="text-gray-600 mb-5">{cake.description}</p>
-                  <button className="w-full bg-[var(--pink-dark)] hover:bg-[var(--pink)] text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+                  <button 
+                    onClick={() => addToCart(cake)} 
+                    className="w-full bg-[var(--pink-dark)] hover:bg-[var(--pink)] text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300"
+                  >
                     Add to Cart
                   </button>
                 </div>

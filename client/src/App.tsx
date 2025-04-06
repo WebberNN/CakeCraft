@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
+import { CartProvider } from "@/contexts/CartContext";
 
 // Initialize AOS animation
 declare global {
@@ -31,8 +32,10 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <CartProvider>
+        <Router />
+        <Toaster />
+      </CartProvider>
     </QueryClientProvider>
   );
 }
