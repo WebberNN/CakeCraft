@@ -1,9 +1,59 @@
-import { useState } from "react";
-import { cakes } from "@/data/cakes";
-import { useCart } from "@/contexts/CartContext";
+import { useState } from 'react';
+
+// Gallery data
+const galleryImages = [
+  {
+    id: 1,
+    title: "Special Birthday Cake",
+    category: "birthday",
+    image: "chocolate-birthday-cake" // Using the SVG patterns we have
+  },
+  {
+    id: 2,
+    title: "Elegant Wedding Cake",
+    category: "wedding",
+    image: "elegant-wedding-cake"
+  },
+  {
+    id: 3, 
+    title: "Classic Cupcakes",
+    category: "cupcakes",
+    image: "assorted-cupcakes"
+  },
+  {
+    id: 4,
+    title: "Delicious Pastries",
+    category: "pastries",
+    image: "vanilla-birthday-cake"
+  },
+  {
+    id: 5,
+    title: "Party Cake Design",
+    category: "birthday",
+    image: "chocolate-birthday-cake"
+  },
+  {
+    id: 6,
+    title: "Premium Wedding Cake",
+    category: "wedding",
+    image: "rose-gold-wedding-cake"
+  },
+  {
+    id: 7,
+    title: "Variety of Snacks",
+    category: "snacks",
+    image: "special-cupcakes"
+  },
+  {
+    id: 8,
+    title: "Golden Anniversary Cake",
+    category: "wedding",
+    image: "elegant-wedding-cake"
+  }
+];
 
 // SVG cake patterns for use in place of actual images
-const cakeSvgs: Record<string, JSX.Element> = {
+const gallerySvgs: Record<string, JSX.Element> = {
   "chocolate-birthday-cake": (
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="#f8e1e5" />
@@ -90,139 +140,154 @@ const cakeSvgs: Record<string, JSX.Element> = {
   )
 };
 
-const Shop = () => {
-  const [filter, setFilter] = useState("all");
-  const { addToCart } = useCart();
+const Gallery = () => {
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
-  const filteredCakes = cakes.filter(cake => 
-    filter === "all" || cake.category === filter
-  );
-
+  const filteredImages = activeFilter === 'all' 
+    ? galleryImages 
+    : galleryImages.filter(img => img.category === activeFilter);
+  
+  const openLightbox = (imageId: number) => {
+    setSelectedImage(imageId);
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when lightbox is open
+  };
+  
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    document.body.style.overflow = 'auto'; // Re-enable scrolling
+  };
+  
   return (
-    <section id="shop" className="py-20">
+    <section id="gallery" className="py-20 bg-[var(--gray-light)]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16" data-aos="fade-up" data-aos-duration="1000">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">Our Delicious Products</h2>
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">Our Gallery</h2>
           <div className="w-20 h-1 bg-[var(--pink-dark)] mx-auto mb-6"></div>
           <p className="text-lg max-w-2xl mx-auto">
-            Browse our selection of handcrafted cakes, pastries, and snacks, perfect for any occasion.
-            Each product is made with premium ingredients and lots of love.
+            Take a look at some of our most beautiful creations. Each item is carefully crafted with attention to detail.
           </p>
         </div>
-
+        
         {/* Filter buttons */}
         <div className="flex flex-wrap justify-center gap-3 mb-12" data-aos="fade-up" data-aos-duration="1000">
           <button 
             className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "all" 
+              activeFilter === "all" 
                 ? "bg-[var(--pink-dark)] text-white" 
                 : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
             }`}
-            onClick={() => setFilter("all")}
+            onClick={() => setActiveFilter("all")}
           >
-            All Products
+            All
           </button>
           <button 
             className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "birthday" 
+              activeFilter === "birthday" 
                 ? "bg-[var(--pink-dark)] text-white" 
                 : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
             }`}
-            onClick={() => setFilter("birthday")}
+            onClick={() => setActiveFilter("birthday")}
           >
-            Birthday Cakes
+            Birthday
           </button>
           <button 
             className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "wedding" 
+              activeFilter === "wedding" 
                 ? "bg-[var(--pink-dark)] text-white" 
                 : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
             }`}
-            onClick={() => setFilter("wedding")}
+            onClick={() => setActiveFilter("wedding")}
           >
-            Wedding Cakes
+            Wedding
           </button>
           <button 
             className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "cupcakes" 
+              activeFilter === "cupcakes" 
                 ? "bg-[var(--pink-dark)] text-white" 
                 : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
             }`}
-            onClick={() => setFilter("cupcakes")}
+            onClick={() => setActiveFilter("cupcakes")}
           >
             Cupcakes
           </button>
           <button 
             className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "pastries" 
+              activeFilter === "pastries" 
                 ? "bg-[var(--pink-dark)] text-white" 
                 : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
             }`}
-            onClick={() => setFilter("pastries")}
+            onClick={() => setActiveFilter("pastries")}
           >
             Pastries
           </button>
           <button 
             className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "sausage-rolls" 
+              activeFilter === "snacks" 
                 ? "bg-[var(--pink-dark)] text-white" 
                 : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
             }`}
-            onClick={() => setFilter("sausage-rolls")}
-          >
-            Sausage Rolls
-          </button>
-          <button 
-            className={`py-2 px-5 rounded-full hover:shadow-md transition-all duration-300 ${
-              filter === "snacks" 
-                ? "bg-[var(--pink-dark)] text-white" 
-                : "bg-white border border-[var(--pink)] hover:border-[var(--pink-dark)] text-[var(--gray-dark)] hover:text-[var(--pink-dark)]"
-            }`}
-            onClick={() => setFilter("snacks")}
+            onClick={() => setActiveFilter("snacks")}
           >
             Snacks
           </button>
         </div>
-
-        {/* Cake products grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCakes.map(cake => (
+        
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" data-aos="fade-up" data-aos-duration="1000">
+          {filteredImages.map((item) => (
             <div 
-              key={cake.id} 
-              className="cake-item"
-              data-aos="fade-up" 
-              data-aos-duration="1000" 
-              data-aos-delay={(cake.id % 3) * 100 + 100}
+              key={item.id} 
+              className="gallery-item overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+              onClick={() => openLightbox(item.id)}
+              data-aos="zoom-in"
+              data-aos-delay={(item.id % 4) * 100}
             >
-              <div className="bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
-                <div className="w-full h-64">
-                  {cakeSvgs[cake.image]}
+              <div className="relative overflow-hidden group h-64">
+                <div className="w-full h-full transition-transform duration-500 group-hover:scale-110">
+                  {gallerySvgs[item.image]}
                 </div>
-                <div className="p-6">
-                  <h3 className="font-playfair font-bold text-xl mb-2">{cake.name}</h3>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[var(--pink-dark)] font-semibold">{cake.price}</span>
-                    {cake.tag && (
-                      <span className="text-sm bg-[var(--pink-light)] text-[var(--pink-dark)] px-3 py-1 rounded-full">
-                        {cake.tag}
-                      </span>
-                    )}
+                <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="text-white text-center p-4">
+                    <span className="text-lg font-semibold">{item.title}</span>
+                    <div className="w-10 h-1 bg-white mx-auto my-2"></div>
+                    <p className="text-sm">{item.category}</p>
                   </div>
-                  <p className="text-gray-600 mb-5">{cake.description}</p>
-                  <button 
-                    onClick={() => addToCart(cake)} 
-                    className="w-full bg-[var(--pink-dark)] hover:bg-[var(--pink)] text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300"
-                  >
-                    Add to Cart
-                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+        
+        {/* Lightbox */}
+        {selectedImage !== null && (
+          <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4" onClick={closeLightbox}>
+            <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+              <button 
+                className="absolute -top-10 right-0 text-white text-2xl"
+                onClick={closeLightbox}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+              <div className="bg-white rounded-lg overflow-hidden">
+                <div className="h-[60vh] w-full">
+                  {gallerySvgs[galleryImages.find(img => img.id === selectedImage)?.image || ""]}
+                </div>
+                <div className="p-4 text-center">
+                  <h3 className="text-xl font-bold">
+                    {galleryImages.find(img => img.id === selectedImage)?.title}
+                  </h3>
+                  <p className="text-gray-600 mt-2">
+                    {galleryImages.find(img => img.id === selectedImage)?.category}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
-export default Shop;
+export default Gallery;

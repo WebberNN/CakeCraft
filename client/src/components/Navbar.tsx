@@ -48,11 +48,14 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
         </div>
         
         {/* Desktop menu */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-6">
           <a href="#home" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Home</a>
-          <a href="#shop" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Shop</a>
           <a href="#about" className="hover:text-[var(--pink-dark)] transition-colors duration-300">About</a>
+          <a href="#shop" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Shop</a>
+          <a href="#gallery" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Gallery</a>
           <a href="#testimonials" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Testimonials</a>
+          <a href="#blog" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Blog</a>
+          <a href="#faq" className="hover:text-[var(--pink-dark)] transition-colors duration-300">FAQ</a>
           <a href="#contact" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Contact</a>
         </nav>
         
@@ -84,9 +87,12 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
         <div className="container mx-auto px-4 py-2">
           <nav className="flex flex-col space-y-3 pb-3">
             <a href="#home" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Home</a>
-            <a href="#shop" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Shop</a>
             <a href="#about" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">About</a>
+            <a href="#shop" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Shop</a>
+            <a href="#gallery" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Gallery</a>
             <a href="#testimonials" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Testimonials</a>
+            <a href="#blog" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Blog</a>
+            <a href="#faq" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">FAQ</a>
             <a href="#contact" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Contact</a>
             
             <a 
