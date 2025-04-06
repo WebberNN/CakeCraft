@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground font-poppins;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair font-bold;
+  }
+}
+
+/* Custom colors and variables */
+:root {
+  --pink-light: #FFD6DC;
+  --pink: #FFC0CB;
+  --pink-dark: #FF6B8B;
+  --gray-light: #F8F8F8;
+  --gray: #EEEEEE;
+  --gray-dark: #333333;
+}
+
+/* Custom styles */
+.hero-gradient {
+  background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 214, 220, 0.7));
+}
+
+.overlay-pink {
+  background: linear-gradient(rgba(255, 192, 203, 0.1), rgba(255, 192, 203, 0.3));
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Font families */
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar shadow on scroll */
+.navbar-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
