@@ -1,0 +1,75 @@
+Generate a full responsive HTML, CSS, and JavaScript website for a cake business named “Abie”. The website should use a clean, soft pink UI design, and include the following sections and details:
+
+⸻
+
+General Style:
+	•	Colors: Soft pink (#FFC0CB, #FFD6DC), white, light gray
+	•	Typography: Use Poppins or Playfair Display from Google Fonts
+	•	Rounded buttons, smooth hover effects, scroll animations (AOS.js)
+	•	Mobile responsive layout
+
+⸻
+
+Navbar:
+	•	Logo: Abie
+	•	Menu: Home, Shop, About, Testimonials, Contact
+	•	Sticky header
+	•	Contact at top: +234 814 804 8649
+	•	Social media icons for:
+	•	Instagram: @Abie’s Cake
+	•	TikTok: @Abie’s Cake
+
+⸻
+
+Hero Section:
+	•	Large hero image (cake placeholder)
+	•	Tagline: “Sweet Moments, Baked with Love”
+	•	Button: “Shop Now”
+	•	Floating WhatsApp “Order Now” button in the bottom-right corner that links to https://wa.me/2348148048649?text=Hi%20Abie%2C%20I%20would%20like%20to%20order%20a%20cake!
+
+⸻
+
+About Section:
+	•	Bio: “Abie’s Cake is a student-run cake brand started 5 years ago by Imisioluwa Ajayi, a passionate baker and student of the University of Ibadan. We’ve been delivering sweet, elegant cakes for every occasion ever since.”
+	•	Add a photo or illustration beside the text
+
+⸻
+
+Cakes / Shop Section:
+	•	Grid layout of products
+	•	Each product should have:
+	•	Image (placeholder)
+	•	Name
+	•	Price
+	•	Short description
+	•	“Add to Cart” button
+	•	Filter buttons (e.g. Birthday Cakes, Wedding Cakes, Cupcakes)
+
+⸻
+
+Testimonials & Reviews Section:
+	•	Use realistic Nigerian names and photos (e.g., Ada Obi, Tunde Adebayo, Ifeoma Okonkwo, Sola George)
+	•	Each review should include:
+	•	Picture
+	•	Star rating
+	•	Written review
+	•	City (e.g., Lagos, Abuja, Ibadan)
+	•	Add a section heading: “Trusted by Hundreds of Happy Customers”
+	•	Optional: Carousel layout
+	•	Add 1–2 recent reviews marked as “Verified Purchase”
+
+⸻
+
+Contact Section:
+	•	Email: Imisioluwaajayi3@gmail.com
+	•	Phone: +234 814 804 8649
+	•	IG / TikTok handles: @Abie’s Cake
+	•	Simple contact form: Name, Email, Message
+
+⸻
+
+Footer:
+	•	Brand name
+	•	Social icons
+	•	Quick links
+	•	Copyright text: “© 2025 Abie. All Rights Reserved”
