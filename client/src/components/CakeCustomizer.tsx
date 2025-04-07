@@ -54,12 +54,25 @@ const CakeCustomizer = () => {
   
   // For animated cake preview
   const [isRotating, setIsRotating] = useState(false);
+  const [animation, setAnimation] = useState({ 
+    zoom: false, 
+    shake: false, 
+    bounce: false 
+  });
   
   const { addToCart } = useCart();
   
   // Toggle rotating animation on hover
   const toggleRotation = () => {
     setIsRotating(!isRotating);
+  };
+  
+  // Add animation after selections
+  const triggerAnimation = (type: 'zoom' | 'shake' | 'bounce') => {
+    setAnimation({ ...animation, [type]: true });
+    setTimeout(() => {
+      setAnimation({ ...animation, [type]: false });
+    }, 1000);
   };
   
   // Calculate total price when selections change
@@ -147,7 +160,11 @@ const CakeCustomizer = () => {
                 <div className={`aspect-square relative transition-transform duration-1000 ${isRotating ? 'rotate-y-180' : ''}`}>
                   <div className="flex flex-col items-center">
                     {/* Cake preview */}
-                    <div className="w-64 h-64 mx-auto relative">
+                    <div className={`w-64 h-64 mx-auto relative 
+                      ${animation.bounce ? 'animate-bounce' : ''}
+                      ${animation.shake ? 'animate-wiggle' : ''}
+                      ${animation.zoom ? 'animate-pulse' : ''}
+                    `}>
                       {/* Base */}
                       <div 
                         className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-48 h-32 rounded-t-full overflow-hidden" 
@@ -261,7 +278,10 @@ const CakeCustomizer = () => {
                         ? 'border-[var(--pink-dark)] bg-[var(--pink-light)] text-[var(--pink-dark)]' 
                         : 'border-gray-200 hover:border-[var(--pink)]'
                     }`}
-                    onClick={() => setFlavor(flavorOption)}
+                    onClick={() => {
+                      setFlavor(flavorOption);
+                      triggerAnimation('bounce');
+                    }}
                   >
                     <div 
                       className="w-6 h-6 rounded-full mx-auto mb-2" 
@@ -286,7 +306,10 @@ const CakeCustomizer = () => {
                         ? 'border-[var(--pink-dark)] bg-[var(--pink-light)] text-[var(--pink-dark)]' 
                         : 'border-gray-200 hover:border-[var(--pink)]'
                     }`}
-                    onClick={() => setSize(sizeOption)}
+                    onClick={() => {
+                      setSize(sizeOption);
+                      triggerAnimation('zoom');
+                    }}
                   >
                     <div className="text-sm font-medium">{sizeOption.name}</div>
                     <div className="text-xs text-gray-500">Serves {sizeOption.slices}</div>
@@ -307,7 +330,10 @@ const CakeCustomizer = () => {
                         ? 'border-[var(--pink-dark)] bg-[var(--pink-light)] text-[var(--pink-dark)]' 
                         : 'border-gray-200 hover:border-[var(--pink)]'
                     }`}
-                    onClick={() => setFrosting(frostingOption)}
+                    onClick={() => {
+                      setFrosting(frostingOption);
+                      triggerAnimation('shake');
+                    }}
                   >
                     <div 
                       className="w-6 h-6 rounded-full mx-auto mb-2" 
@@ -332,7 +358,10 @@ const CakeCustomizer = () => {
                         ? 'border-[var(--pink-dark)] bg-[var(--pink-light)] text-[var(--pink-dark)]' 
                         : 'border-gray-200 hover:border-[var(--pink)]'
                     }`}
-                    onClick={() => handleToppingToggle(toppingOption.id)}
+                    onClick={() => {
+                      handleToppingToggle(toppingOption.id);
+                      triggerAnimation('bounce');
+                    }}
                   >
                     <div className="flex items-center">
                       <div className="text-sm flex-1">{toppingOption.name}</div>
