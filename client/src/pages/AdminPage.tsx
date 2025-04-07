@@ -8,10 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { 
   Loader2, Edit, Trash, Check, X, Home, ShoppingBag, Upload, 
-  Image, PenSquare, Calendar, CakeSlice, FileText, BookOpen, MessageSquare 
+  Image, PenSquare, Calendar, CakeSlice, FileText, BookOpen, MessageSquare,
+  Palette, Bell, Settings, Mail
 } from 'lucide-react';
 import CakeForm from '@/components/admin/CakeForm';
 import GalleryForm from '@/components/admin/GalleryForm';
+import RecipeForm from '@/components/admin/RecipeForm';
+import OfferForm from '@/components/admin/OfferForm';
+import BlogPostForm from '@/components/admin/BlogPostForm';
+import ContactMessageDetails from '@/components/admin/ContactMessageDetails';
+import ThemeSettingsForm from '@/components/admin/ThemeSettingsForm';
 import {
   Table,
   TableBody,
@@ -69,6 +75,8 @@ const aboutFormSchema = z.object({
 export default function AdminPage() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('products');
+  
+  // Products state
   const [editCake, setEditCake] = useState<Cake | undefined>(undefined);
   const [isCakeFormOpen, setIsCakeFormOpen] = useState(false);
   const [deleteCakeId, setDeleteCakeId] = useState<number | null>(null);
@@ -79,6 +87,28 @@ export default function AdminPage() {
   const [isGalleryFormOpen, setIsGalleryFormOpen] = useState(false);
   const [deleteGalleryImageId, setDeleteGalleryImageId] = useState<number | null>(null);
   const [isDeleteGalleryDialogOpen, setIsDeleteGalleryDialogOpen] = useState(false);
+  
+  // Recipe state
+  const [isRecipeFormOpen, setIsRecipeFormOpen] = useState(false);
+  const [editRecipe, setEditRecipe] = useState<any>(undefined);
+  const [deleteRecipeId, setDeleteRecipeId] = useState<number | null>(null);
+  const [isDeleteRecipeDialogOpen, setIsDeleteRecipeDialogOpen] = useState(false);
+  
+  // Offer state
+  const [isOfferFormOpen, setIsOfferFormOpen] = useState(false);
+  const [editOffer, setEditOffer] = useState<any>(undefined);
+  const [deleteOfferId, setDeleteOfferId] = useState<number | null>(null);
+  const [isDeleteOfferDialogOpen, setIsDeleteOfferDialogOpen] = useState(false);
+  
+  // Blog state
+  const [isBlogPostFormOpen, setIsBlogPostFormOpen] = useState(false);
+  const [editBlogPost, setEditBlogPost] = useState<any>(undefined);
+  const [deleteBlogPostId, setDeleteBlogPostId] = useState<number | null>(null);
+  const [isDeleteBlogPostDialogOpen, setIsDeleteBlogPostDialogOpen] = useState(false);
+  
+  // Messages state
+  const [selectedMessage, setSelectedMessage] = useState<any>(undefined);
+  const [isMessageDetailsOpen, setIsMessageDetailsOpen] = useState(false);
   
   // Hero section form
   const heroForm = useForm<z.infer<typeof heroFormSchema>>({
@@ -388,13 +418,16 @@ export default function AdminPage() {
           value={activeTab}
           onValueChange={setActiveTab}
         >
-        <TabsList className="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
+        <TabsList className="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-9">
           <TabsTrigger value="home"><Home className="h-4 w-4 mr-2" /> Home</TabsTrigger>
           <TabsTrigger value="products"><ShoppingBag className="h-4 w-4 mr-2" /> Products</TabsTrigger>
           <TabsTrigger value="testimonials"><MessageSquare className="h-4 w-4 mr-2" /> Reviews</TabsTrigger>
           <TabsTrigger value="gallery"><Image className="h-4 w-4 mr-2" /> Gallery</TabsTrigger>
           <TabsTrigger value="recipes"><BookOpen className="h-4 w-4 mr-2" /> Recipes</TabsTrigger>
           <TabsTrigger value="offers"><Calendar className="h-4 w-4 mr-2" /> Offers</TabsTrigger>
+          <TabsTrigger value="blog"><FileText className="h-4 w-4 mr-2" /> Blog</TabsTrigger>
+          <TabsTrigger value="messages"><Mail className="h-4 w-4 mr-2" /> Messages</TabsTrigger>
+          <TabsTrigger value="theme"><Palette className="h-4 w-4 mr-2" /> Theme</TabsTrigger>
         </TabsList>
 
         {/* HOME PAGE CONTENT */}
@@ -879,17 +912,24 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Manage Recipes</h2>
-              <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+              <Button 
+                className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
+                onClick={() => {
+                  setEditRecipe(undefined);
+                  setIsRecipeFormOpen(true);
+                }}
+              >
                 <PenSquare className="h-4 w-4 mr-2" />
                 Add New Recipe
               </Button>
             </div>
             <p className="text-gray-600">
-              Add, edit or remove recipes from your recipe blog.
+              Add, edit or remove recipes from your recipe blog. Featured recipes will appear on the homepage.
             </p>
             <Separator className="my-4" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Example recipe cards - these will be replaced with actual data from API */}
               <Card>
                 <div className="h-48 overflow-hidden">
                   <img 
@@ -899,7 +939,12 @@ export default function AdminPage() {
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>Vanilla Strawberry Cake</CardTitle>
+                  <div className="flex justify-between">
+                    <CardTitle>Vanilla Strawberry Cake</CardTitle>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Featured
+                    </span>
+                  </div>
                   <CardDescription>Difficulty: Easy • 45 mins</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -908,11 +953,38 @@ export default function AdminPage() {
                   </p>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setEditRecipe({
+                        id: 1,
+                        title: "Vanilla Strawberry Cake",
+                        description: "A delicious vanilla cake with fresh strawberry filling and cream cheese frosting.",
+                        category: "Cake",
+                        difficulty: "Easy",
+                        prepTime: "45 minutes",
+                        image: "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1203&q=80",
+                        ingredients: ["2 cups flour", "1 cup sugar", "1/2 cup butter", "2 eggs", "1 cup fresh strawberries"],
+                        instructions: ["Preheat oven to 350°F", "Mix dry ingredients", "Mix wet ingredients", "Combine and bake for 30 min"],
+                        tips: ["Use room temperature eggs", "Don't overmix the batter"],
+                        author: "Abie",
+                        featured: true
+                      });
+                      setIsRecipeFormOpen(true);
+                    }}
+                  >
                     <Edit className="h-4 w-4 mr-1" />
                     Edit
                   </Button>
-                  <Button variant="destructive" size="sm">
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => {
+                      setDeleteRecipeId(1);
+                      setIsDeleteRecipeDialogOpen(true);
+                    }}
+                  >
                     <Trash className="h-4 w-4 mr-1" />
                     Delete
                   </Button>
@@ -937,11 +1009,38 @@ export default function AdminPage() {
                   </p>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setEditRecipe({
+                        id: 2,
+                        title: "Chocolate Mousse Cake",
+                        description: "Rich chocolate cake layers with silky chocolate mousse filling.",
+                        category: "Cake",
+                        difficulty: "Medium",
+                        prepTime: "90 minutes",
+                        image: "https://images.unsplash.com/photo-1514056052883-d017fddd0424?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80",
+                        ingredients: ["2 cups flour", "1 cup sugar", "1 cup cocoa powder", "3 eggs", "1 cup heavy cream"],
+                        instructions: ["Preheat oven to 350°F", "Mix dry ingredients", "Mix wet ingredients", "Combine and bake for 40 min", "Prepare mousse filling"],
+                        tips: ["Use high-quality chocolate", "Chill mousse overnight for best results"],
+                        author: "Abie",
+                        featured: false
+                      });
+                      setIsRecipeFormOpen(true);
+                    }}
+                  >
                     <Edit className="h-4 w-4 mr-1" />
                     Edit
                   </Button>
-                  <Button variant="destructive" size="sm">
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => {
+                      setDeleteRecipeId(2);
+                      setIsDeleteRecipeDialogOpen(true);
+                    }}
+                  >
                     <Trash className="h-4 w-4 mr-1" />
                     Delete
                   </Button>
@@ -949,6 +1048,45 @@ export default function AdminPage() {
               </Card>
             </div>
           </div>
+          
+          {/* Recipe Form Dialog */}
+          <RecipeForm
+            open={isRecipeFormOpen}
+            onClose={() => setIsRecipeFormOpen(false)}
+            recipeToEdit={editRecipe}
+          />
+          
+          {/* Delete Recipe Confirmation Dialog */}
+          <Dialog open={isDeleteRecipeDialogOpen} onOpenChange={setIsDeleteRecipeDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this recipe? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDeleteRecipeDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={() => {
+                    toast({
+                      title: "Recipe deleted",
+                      description: "The recipe has been successfully deleted"
+                    });
+                    setIsDeleteRecipeDialogOpen(false);
+                  }}
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         {/* OFFERS MANAGEMENT */}
@@ -956,17 +1094,24 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Manage Special Offers</h2>
-              <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+              <Button 
+                className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
+                onClick={() => {
+                  setEditOffer(undefined);
+                  setIsOfferFormOpen(true);
+                }}
+              >
                 <Calendar className="h-4 w-4 mr-2" />
                 Add New Offer
               </Button>
             </div>
             <p className="text-gray-600">
-              Create and manage limited-time special offers and promotions.
+              Create and manage limited-time special offers and promotions. Only active offers will display on the website.
             </p>
             <Separator className="my-4" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Example offer cards - these will be replaced with actual data from API */}
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-start">
@@ -978,21 +1123,45 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center mb-3">
-                    <span className="text-lg font-bold text-[var(--pink-dark)]">$49.99</span>
-                    <span className="ml-2 text-sm line-through text-gray-400">$69.99</span>
+                    <span className="text-lg font-bold text-[var(--pink-dark)]">₦9,999</span>
+                    <span className="ml-2 text-sm line-through text-gray-400">₦14,999</span>
                     <span className="ml-2 text-sm bg-green-100 text-green-800 px-2 rounded-full">
-                      Save 28%
+                      Save 33%
                     </span>
                   </div>
                   <p className="text-gray-600 mb-3">
                     A special Valentine's day bundle with a heart-shaped cake, 6 cupcakes, and a box of chocolate truffles.
                   </p>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setEditOffer({
+                          id: 1,
+                          name: "Valentine's Special Bundle",
+                          description: "A special Valentine's day bundle with a heart-shaped cake, 6 cupcakes, and a box of chocolate truffles.",
+                          price: 9999,
+                          originalPrice: 14999,
+                          discount: "33%",
+                          image: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                          endDate: "February 14, 2023",
+                          active: true
+                        });
+                        setIsOfferFormOpen(true);
+                      }}
+                    >
                       <Edit className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
-                    <Button variant="destructive" size="sm">
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => {
+                        setDeleteOfferId(1);
+                        setIsDeleteOfferDialogOpen(true);
+                      }}
+                    >
                       <Trash className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
@@ -1011,8 +1180,8 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center mb-3">
-                    <span className="text-lg font-bold text-[var(--pink-dark)]">$89.99</span>
-                    <span className="ml-2 text-sm line-through text-gray-400">$109.99</span>
+                    <span className="text-lg font-bold text-[var(--pink-dark)]">₦17,999</span>
+                    <span className="ml-2 text-sm line-through text-gray-400">₦21,999</span>
                     <span className="ml-2 text-sm bg-green-100 text-green-800 px-2 rounded-full">
                       Save 18%
                     </span>
@@ -1021,13 +1190,440 @@ export default function AdminPage() {
                     Complete birthday party package with a custom cake, 12 cupcakes, party decorations, and candles.
                   </p>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setEditOffer({
+                          id: 2,
+                          name: "Birthday Party Package",
+                          description: "Complete birthday party package with a custom cake, 12 cupcakes, party decorations, and candles.",
+                          price: 17999,
+                          originalPrice: 21999,
+                          discount: "18%",
+                          image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                          endDate: "Ongoing",
+                          active: true
+                        });
+                        setIsOfferFormOpen(true);
+                      }}
+                    >
                       <Edit className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
-                    <Button variant="destructive" size="sm">
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => {
+                        setDeleteOfferId(2);
+                        setIsDeleteOfferDialogOpen(true);
+                      }}
+                    >
                       <Trash className="h-4 w-4 mr-1" />
                       Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          
+          {/* Offer Form Dialog */}
+          <OfferForm
+            open={isOfferFormOpen}
+            onClose={() => setIsOfferFormOpen(false)}
+            offerToEdit={editOffer}
+          />
+          
+          {/* Delete Offer Confirmation Dialog */}
+          <Dialog open={isDeleteOfferDialogOpen} onOpenChange={setIsDeleteOfferDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this special offer? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDeleteOfferDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={() => {
+                    toast({
+                      title: "Special offer deleted",
+                      description: "The special offer has been successfully deleted"
+                    });
+                    setIsDeleteOfferDialogOpen(false);
+                  }}
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+        
+        {/* BLOG MANAGEMENT */}
+        <TabsContent value="blog">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Manage Blog Posts</h2>
+              <Button 
+                className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
+                onClick={() => {
+                  setEditBlogPost(undefined);
+                  setIsBlogPostFormOpen(true);
+                }}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Create New Post
+              </Button>
+            </div>
+            <p className="text-gray-600">
+              Create and manage blog posts to share recipes, tips, and news with your customers.
+            </p>
+            <Separator className="my-4" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Example blog post cards */}
+              <Card>
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1607478900766-efe13248b125?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80" 
+                    alt="Blog Post" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">5 Tips for Perfect Cake Decoration</CardTitle>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Published
+                    </span>
+                  </div>
+                  <CardDescription>Posted by Abie • April 2, 2023</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    Learn professional cake decoration techniques that you can use at home to make your cakes look spectacular...
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded-full">Decoration</span>
+                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded-full">Tips</span>
+                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded-full">Beginner</span>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setEditBlogPost({
+                        id: 1,
+                        title: "5 Tips for Perfect Cake Decoration",
+                        slug: "5-tips-for-perfect-cake-decoration",
+                        content: "Learn professional cake decoration techniques that you can use at home to make your cakes look spectacular...\n\n## Tip 1: Prepare Your Tools\nBefore you start, make sure you have all the necessary tools ready...\n\n## Tip 2: Chill Your Cake\nAlways work with a chilled cake. This makes it much easier to apply frosting...",
+                        excerpt: "Learn professional cake decoration techniques that you can use at home to make your cakes look spectacular...",
+                        coverImage: "https://images.unsplash.com/photo-1607478900766-efe13248b125?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80",
+                        author: "Abie",
+                        tags: ["Decoration", "Tips", "Beginner"],
+                        published: true
+                      });
+                      setIsBlogPostFormOpen(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => {
+                      setDeleteBlogPostId(1);
+                      setIsDeleteBlogPostDialogOpen(true);
+                    }}
+                  >
+                    <Trash className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              <Card>
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2965&q=80" 
+                    alt="Blog Post" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">The History of Red Velvet Cake</CardTitle>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      Draft
+                    </span>
+                  </div>
+                  <CardDescription>Posted by Abie • March 18, 2023</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    Discover the fascinating origin story of the iconic red velvet cake, from its humble beginnings to becoming a global favorite...
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded-full">History</span>
+                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded-full">Red Velvet</span>
+                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded-full">Cake</span>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setEditBlogPost({
+                        id: 2,
+                        title: "The History of Red Velvet Cake",
+                        slug: "history-of-red-velvet-cake",
+                        content: "Discover the fascinating origin story of the iconic red velvet cake, from its humble beginnings to becoming a global favorite...",
+                        excerpt: "Discover the fascinating origin story of the iconic red velvet cake, from its humble beginnings to becoming a global favorite...",
+                        coverImage: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2965&q=80",
+                        author: "Abie",
+                        tags: ["History", "Red Velvet", "Cake"],
+                        published: false
+                      });
+                      setIsBlogPostFormOpen(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => {
+                      setDeleteBlogPostId(2);
+                      setIsDeleteBlogPostDialogOpen(true);
+                    }}
+                  >
+                    <Trash className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </div>
+          
+          {/* Blog Post Form Dialog */}
+          <BlogPostForm
+            open={isBlogPostFormOpen}
+            onClose={() => setIsBlogPostFormOpen(false)}
+            postToEdit={editBlogPost}
+          />
+          
+          {/* Delete Blog Post Confirmation Dialog */}
+          <Dialog open={isDeleteBlogPostDialogOpen} onOpenChange={setIsDeleteBlogPostDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this blog post? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDeleteBlogPostDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={() => {
+                    toast({
+                      title: "Blog post deleted",
+                      description: "The blog post has been successfully deleted"
+                    });
+                    setIsDeleteBlogPostDialogOpen(false);
+                  }}
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+        
+        {/* MESSAGES MANAGEMENT */}
+        <TabsContent value="messages">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Contact Messages</h2>
+            </div>
+            <p className="text-gray-600">
+              View and manage customer inquiries and messages sent through the contact form.
+            </p>
+            <Separator className="my-4" />
+            
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* Example messages - to be replaced with API data */}
+                  <TableRow>
+                    <TableCell className="font-medium">Sarah Johnson</TableCell>
+                    <TableCell>sarah.j@example.com</TableCell>
+                    <TableCell>Birthday Cake Inquiry</TableCell>
+                    <TableCell className="text-nowrap">April 5, 2023</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        Unread
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMessage({
+                              id: 1,
+                              name: "Sarah Johnson",
+                              email: "sarah.j@example.com",
+                              subject: "Birthday Cake Inquiry",
+                              message: "Hello,\n\nI'm interested in ordering a birthday cake for my daughter's 10th birthday next month. Can you tell me about your designs and flavors available for children's parties? And what is the lead time for ordering?\n\nThank you,\nSarah",
+                              read: false,
+                              createdAt: "2023-04-05T14:23:10Z"
+                            });
+                            setIsMessageDetailsOpen(true);
+                          }}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Michael Smith</TableCell>
+                    <TableCell>mike.smith@example.com</TableCell>
+                    <TableCell>Wedding Cake Quote</TableCell>
+                    <TableCell className="text-nowrap">April 3, 2023</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Read
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMessage({
+                              id: 2,
+                              name: "Michael Smith",
+                              email: "mike.smith@example.com",
+                              subject: "Wedding Cake Quote",
+                              message: "Hi Abie Cakes,\n\nMy fiancée and I are getting married on June 15th and we're looking for a 3-tier wedding cake for approximately 100 guests. We're interested in your classic designs with some custom elements to match our theme. Could you provide a quote and information about your tasting sessions?\n\nBest regards,\nMichael",
+                              read: true,
+                              createdAt: "2023-04-03T10:14:22Z"
+                            });
+                            setIsMessageDetailsOpen(true);
+                          }}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          
+          {/* Message Details Dialog */}
+          <ContactMessageDetails 
+            open={isMessageDetailsOpen}
+            onClose={() => setIsMessageDetailsOpen(false)}
+            message={selectedMessage}
+          />
+        </TabsContent>
+        
+        {/* THEME MANAGEMENT */}
+        <TabsContent value="theme">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold">Website Theme Settings</h2>
+              <p className="text-gray-600 mt-1">
+                Customize the look and feel of your website by adjusting the color scheme and design elements.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Theme Customization</CardTitle>
+                  <CardDescription>
+                    Adjust colors, borders, and appearance to match your brand
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ThemeSettingsForm />
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Footer Customization</CardTitle>
+                  <CardDescription>
+                    Update your website footer information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Copyright Text</label>
+                      <Input defaultValue="© 2023 Abie Cakes. All rights reserved." />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Footer Text</label>
+                      <Textarea 
+                        className="min-h-[100px]"
+                        defaultValue="Designed by WebberNn. Contact the developer at +1 (672) 767‑9865 via WhatsApp for your website needs."
+                      />
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Switch id="show-socials" defaultChecked />
+                      <label htmlFor="show-socials" className="text-sm font-medium">
+                        Show social media icons in footer
+                      </label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Switch id="show-payment" defaultChecked />
+                      <label htmlFor="show-payment" className="text-sm font-medium">
+                        Show payment method icons in footer
+                      </label>
+                    </div>
+                    
+                    <Button className="w-full bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                      Save Footer Settings
                     </Button>
                   </div>
                 </CardContent>
