@@ -10,7 +10,12 @@ import RecipesPage from "@/pages/RecipesPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import GalleryPage from "@/pages/GalleryPage";
 import OffersPage from "@/pages/OffersPage";
+import AuthPage from "@/pages/auth-page";
+import AdminPage from "@/pages/AdminPage";
 import { CartProvider } from "@/contexts/CartContext";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "./lib/protected-route";
+import FlavorQuizPage from "@/pages/FlavorQuizPage";
 
 // Initialize AOS animation
 declare global {
@@ -22,12 +27,15 @@ declare global {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home}/>
-      <Route path="/customize" component={CustomizerPage}/>
-      <Route path="/recipes" component={RecipesPage}/>
-      <Route path="/track-order" component={TrackOrderPage}/>
-      <Route path="/gallery" component={GalleryPage}/>
-      <Route path="/offers" component={OffersPage}/>
+      <Route path="/" component={Home} />
+      <Route path="/customize" component={CustomizerPage} />
+      <Route path="/recipes" component={RecipesPage} />
+      <Route path="/track-order" component={TrackOrderPage} />
+      <Route path="/gallery" component={GalleryPage} />
+      <Route path="/offers" component={OffersPage} />
+      <Route path="/quiz" component={FlavorQuizPage} />
+      <Route path="/auth" component={AuthPage} />
+      <ProtectedRoute path="/admin" component={AdminPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -42,10 +50,12 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <Router />
-        <Toaster />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Router />
+          <Toaster />
+        </CartProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

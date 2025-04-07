@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Cart } from "@/components/Cart";
+import { useAuth } from "@/hooks/use-auth";
 
 interface NavbarProps {
   isScrolled: boolean;
@@ -8,6 +9,7 @@ interface NavbarProps {
 
 const Navbar = ({ isScrolled }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logoutMutation } = useAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -15,6 +17,11 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+  
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    closeMobileMenu();
   };
 
   return (
@@ -62,6 +69,29 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
           {/* Cart component */}
           <Cart />
           
+          {/* Admin/Auth links (visible on desktop) */}
+          <div className="hidden md:block">
+            {user ? (
+              <div className="flex items-center space-x-3">
+                {user.isAdmin && (
+                  <Link href="/admin" className="text-[var(--pink-dark)] font-medium">
+                    Admin
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/auth" className="text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300">
+                Login
+              </Link>
+            )}
+          </div>
+          
           {/* Order Now button (visible on desktop) */}
           <a 
             href="https://wa.me/2348148048649?text=Hello%20Abie%2C%20I%20would%20like%20to%20place%20an%20order%20for%20a%20cake!"
@@ -100,6 +130,37 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
             >
               Order Now
             </a>
+            
+            {/* Auth links for mobile menu */}
+            <div className="py-2 border-b border-[var(--gray)]">
+              {user ? (
+                <div className="flex flex-col space-y-2">
+                  {user.isAdmin && (
+                    <Link 
+                      href="/admin" 
+                      onClick={closeMobileMenu}
+                      className="text-[var(--pink-dark)] font-medium"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="text-left text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  href="/auth" 
+                  onClick={closeMobileMenu}
+                  className="text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300"
+                >
+                  Login / Register
+                </Link>
+              )}
+            </div>
             
             <div className="flex space-x-4 pt-2">
               <a href="https://instagram.com/abies_cake" className="text-[var(--gray-dark)] hover:text-[var(--pink-dark)] transition">
