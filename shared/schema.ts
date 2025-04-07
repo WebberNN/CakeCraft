@@ -78,7 +78,9 @@ export const insertCakeSchema = createInsertSchema(cakes, {
   featured: true,
 });
 
-export const insertReviewSchema = createInsertSchema(reviews).pick({
+export const insertReviewSchema = createInsertSchema(reviews, {
+  rating: z.coerce.string()
+}).pick({
   name: true,
   city: true,
   rating: true,

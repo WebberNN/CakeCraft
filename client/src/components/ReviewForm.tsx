@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertReviewSchema } from "@shared/schema";
+import { insertReviewSchema, InsertReview } from "@shared/schema";
 
 // Define the schema for the review form
 const formSchema = z.object({
@@ -67,10 +67,10 @@ const ReviewForm = () => {
   const submitReviewMutation = useMutation({
     mutationFn: async (data: ReviewFormValues) => {
       // Transform form data to match the review schema
-      const reviewData = {
+      const reviewData: InsertReview = {
         name: data.name,
         city: data.city,
-        rating: data.rating,
+        rating: data.rating, // Schema handles conversion
         review: data.review,
       };
       
@@ -83,6 +83,9 @@ const ReviewForm = () => {
         title: "Review Submitted!",
         description: "Thank you for sharing your experience with Abie Cakes. Your review will be displayed after approval.",
       });
+      
+      // Invalidate the reviews query to ensure newest data is fetched when approved
+      queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
       
       // Close dialog and reset form
       setIsOpen(false);
