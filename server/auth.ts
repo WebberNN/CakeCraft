@@ -36,15 +36,21 @@ export function setupAuth(app: Express) {
     store: storage.sessionStore,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-      secure: process.env.NODE_ENV === "production",
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
-      httpOnly: true,
-      domain: process.env.NODE_ENV === "production" ? process.env.DOMAIN : undefined
+      httpOnly: true
     }
   };
 
   app.set("trust proxy", 1);
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    next();
+  });
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
