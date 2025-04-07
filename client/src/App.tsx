@@ -10,6 +10,7 @@ import RecipesPage from "@/pages/RecipesPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import GalleryPage from "@/pages/GalleryPage";
 import OffersPage from "@/pages/OffersPage";
+import ProductsPage from "@/pages/ProductsPage";
 import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/AdminPage";
 import { CartProvider } from "@/contexts/CartContext";
@@ -28,6 +29,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/products" component={ProductsPage} />
       <Route path="/customize" component={CustomizerPage} />
       <Route path="/recipes" component={RecipesPage} />
       <Route path="/track-order" component={TrackOrderPage} />

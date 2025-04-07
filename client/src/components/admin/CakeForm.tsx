@@ -255,15 +255,24 @@ export default function CakeForm({ open, onOpenChange, cake }: CakeFormProps) {
             <FormField
               control={form.control}
               name="tag"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tag (optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="new, bestseller, etc." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                // Handle null value from database
+                const sanitizedValue = field.value === null ? '' : field.value;
+                
+                return (
+                  <FormItem>
+                    <FormLabel>Tag (optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="new, bestseller, etc." 
+                        {...field} 
+                        value={sanitizedValue}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             
             <FormField

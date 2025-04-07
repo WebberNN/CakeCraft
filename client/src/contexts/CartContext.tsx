@@ -44,7 +44,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           description: `${cake.name} has been added to your cart.`
         });
         
-        return [...prev, { ...cake, quantity: 1 }];
+        // Handle null tag values when adding to cart
+        const safeTag = cake.tag === null ? undefined : cake.tag;
+        return [...prev, { ...cake, tag: safeTag, quantity: 1 }];
       }
     });
   };

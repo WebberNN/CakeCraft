@@ -57,6 +57,7 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
         {/* Desktop menu */}
         <nav className="hidden md:flex items-center space-x-6">
           <Link href="/" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Home</Link>
+          <Link href="/products" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Products</Link>
           <Link href="/customize" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Customize</Link>
           <Link href="/recipes" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Recipes</Link>
           <Link href="/gallery" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Gallery</Link>
@@ -116,6 +117,7 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
         <div className="container mx-auto px-4 py-2">
           <nav className="flex flex-col space-y-3 pb-3">
             <Link href="/" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Home</Link>
+            <Link href="/products" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Products</Link>
             <Link href="/customize" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Customize</Link>
             <Link href="/recipes" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Recipes</Link>
             <Link href="/gallery" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Gallery</Link>
