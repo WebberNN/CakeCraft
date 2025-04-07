@@ -22,6 +22,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { insertReviewSchema } from "@shared/schema";
 
 // Define the schema for the review form
 const formSchema = z.object({
@@ -59,20 +63,42 @@ const ReviewForm = () => {
     },
   });
 
+  // Create review submission mutation
+  const submitReviewMutation = useMutation({
+    mutationFn: async (data: ReviewFormValues) => {
+      // Transform form data to match the review schema
+      const reviewData = {
+        name: data.name,
+        city: data.city,
+        rating: data.rating,
+        review: data.review,
+      };
+      
+      const response = await apiRequest("POST", "/api/reviews", reviewData);
+      return response.json();
+    },
+    onSuccess: () => {
+      // Show success toast
+      toast({
+        title: "Review Submitted!",
+        description: "Thank you for sharing your experience with Abie Cakes. Your review will be displayed after approval.",
+      });
+      
+      // Close dialog and reset form
+      setIsOpen(false);
+      form.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Submission Failed",
+        description: error.message || "There was an error submitting your review. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const onSubmit = (values: ReviewFormValues) => {
-    console.log("Form submitted:", values);
-    
-    // In a real application, you would send this data to a server
-    
-    // Show success toast
-    toast({
-      title: "Review Submitted!",
-      description: "Thank you for sharing your experience with Abie Cakes.",
-    });
-    
-    // Close dialog and reset form
-    setIsOpen(false);
-    form.reset();
+    submitReviewMutation.mutate(values);
   };
 
   return (
@@ -203,8 +229,16 @@ const ReviewForm = () => {
                     <Button 
                       type="submit" 
                       className="w-full bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
+                      disabled={submitReviewMutation.isPending}
                     >
-                      Submit Review
+                      {submitReviewMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        "Submit Review"
+                      )}
                     </Button>
                   </form>
                 </Form>
