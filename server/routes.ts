@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertCakeSchema, insertReviewSchema, cakeCategoryEnum } from "@shared/schema";
+import { insertCakeSchema, insertReviewSchema, insertGalleryImageSchema, cakeCategoryEnum } from "@shared/schema";
 import { z } from "zod";
 
 // Middleware to check if user is admin
@@ -228,6 +228,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete review" });
+    }
+  });
+
+  // Gallery routes
+  app.get("/api/gallery", async (req, res) => {
+    try {
+      const images = await storage.getGalleryImages();
+      res.json(images);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch gallery images" });
+    }
+  });
+  
+  app.get("/api/gallery/featured", async (req, res) => {
+    try {
+      const images = await storage.getFeaturedGalleryImages();
+      res.json(images);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch featured gallery images" });
+    }
+  });
+  
+  app.get("/api/gallery/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid ID" });
+      }
+      
+      const image = await storage.getGalleryImage(id);
+      if (!image) {
+        return res.status(404).json({ error: "Gallery image not found" });
+      }
+      
+      res.json(image);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch gallery image" });
+    }
+  });
+  
+  // Admin gallery routes
+  app.get("/api/admin/gallery", isAdmin, async (req, res) => {
+    try {
+      const images = await storage.getGalleryImages();
+      res.json(images);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch gallery images" });
+    }
+  });
+  
+  app.post("/api/admin/gallery", isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertGalleryImageSchema.parse(req.body);
+      const image = await storage.createGalleryImage(validatedData);
+      res.status(201).json(image);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Validation failed", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create gallery image" });
+    }
+  });
+  
+  app.put("/api/admin/gallery/:id", isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid ID" });
+      }
+      
+      // Partial validation of the update data
+      const validatedData = insertGalleryImageSchema.partial().parse(req.body);
+      
+      const updatedImage = await storage.updateGalleryImage(id, validatedData);
+      if (!updatedImage) {
+        return res.status(404).json({ error: "Gallery image not found" });
+      }
+      
+      res.json(updatedImage);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Validation failed", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to update gallery image" });
+    }
+  });
+  
+  app.delete("/api/admin/gallery/:id", isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid ID" });
+      }
+      
+      const image = await storage.getGalleryImage(id);
+      if (!image) {
+        return res.status(404).json({ error: "Gallery image not found" });
+      }
+      
+      await storage.deleteGalleryImage(id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete gallery image" });
     }
   });
 

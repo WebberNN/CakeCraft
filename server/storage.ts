@@ -1,7 +1,8 @@
-import { users, cakes, reviews, 
+import { users, cakes, reviews, galleryImages,
   type User, type InsertUser, 
   type Cake, type InsertCake, 
-  type Review, type InsertReview } from "@shared/schema";
+  type Review, type InsertReview,
+  type GalleryImage, type InsertGalleryImage } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 import session from "express-session";
@@ -31,6 +32,14 @@ export interface IStorage {
   createReview(review: InsertReview): Promise<Review>;
   approveReview(id: number): Promise<Review | undefined>;
   deleteReview(id: number): Promise<void>;
+  
+  // Gallery methods
+  getGalleryImages(): Promise<GalleryImage[]>;
+  getFeaturedGalleryImages(): Promise<GalleryImage[]>;
+  getGalleryImage(id: number): Promise<GalleryImage | undefined>;
+  createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
+  updateGalleryImage(id: number, image: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
+  deleteGalleryImage(id: number): Promise<void>;
   
   // Session store
   sessionStore: session.Store;
@@ -127,6 +136,38 @@ export class DatabaseStorage implements IStorage {
   
   async deleteReview(id: number): Promise<void> {
     await db.delete(reviews).where(eq(reviews.id, id));
+  }
+
+  // Gallery methods
+  async getGalleryImages(): Promise<GalleryImage[]> {
+    return db.select().from(galleryImages).orderBy(desc(galleryImages.createdAt));
+  }
+  
+  async getFeaturedGalleryImages(): Promise<GalleryImage[]> {
+    return db.select().from(galleryImages).where(eq(galleryImages.featured, true)).orderBy(desc(galleryImages.createdAt));
+  }
+  
+  async getGalleryImage(id: number): Promise<GalleryImage | undefined> {
+    const [image] = await db.select().from(galleryImages).where(eq(galleryImages.id, id));
+    return image;
+  }
+  
+  async createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage> {
+    const [newImage] = await db.insert(galleryImages).values(image).returning();
+    return newImage;
+  }
+  
+  async updateGalleryImage(id: number, image: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined> {
+    const [updatedImage] = await db
+      .update(galleryImages)
+      .set(image)
+      .where(eq(galleryImages.id, id))
+      .returning();
+    return updatedImage;
+  }
+  
+  async deleteGalleryImage(id: number): Promise<void> {
+    await db.delete(galleryImages).where(eq(galleryImages.id, id));
   }
 }
 

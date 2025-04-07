@@ -49,6 +49,16 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Gallery images table
+export const galleryImages = pgTable("gallery_images", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  imageUrl: text("image_url").notNull(),
+  featured: boolean("featured").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -75,6 +85,13 @@ export const insertReviewSchema = createInsertSchema(reviews).pick({
   review: true,
 });
 
+export const insertGalleryImageSchema = createInsertSchema(galleryImages).pick({
+  title: true,
+  description: true,
+  imageUrl: true,
+  featured: true,
+});
+
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -84,3 +101,6 @@ export type Cake = typeof cakes.$inferSelect;
 
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type Review = typeof reviews.$inferSelect;
+
+export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
+export type GalleryImage = typeof galleryImages.$inferSelect;

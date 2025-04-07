@@ -1076,45 +1076,6 @@ export default function AdminPage() {
         onOpenChange={setIsCakeFormOpen} 
         cake={editCake} 
       />
-      
-      {/* Gallery Form Dialog */}
-      <GalleryForm
-        open={isGalleryFormOpen}
-        onOpenChange={setIsGalleryFormOpen}
-        image={editGalleryImage}
-      />
-      
-      {/* Delete Gallery Image Confirmation Dialog */}
-      <Dialog open={isDeleteGalleryDialogOpen} onOpenChange={setIsDeleteGalleryDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Gallery Image?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete the image from your gallery.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsDeleteGalleryDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button 
-              className="bg-red-500 hover:bg-red-600"
-              onClick={confirmDeleteGalleryImage}
-              disabled={deleteGalleryImageMutation.isPending}
-            >
-              {deleteGalleryImageMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Trash className="h-4 w-4 mr-2" />
-              )}
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
