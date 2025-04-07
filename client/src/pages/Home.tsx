@@ -10,6 +10,7 @@ import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import BackToTop from "@/components/BackToTop";
 
 const Home = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,6 +43,7 @@ const Home = () => {
       <Contact />
       <Footer />
       <WhatsAppButton />
+      <BackToTop />
     </div>
   );
 };
