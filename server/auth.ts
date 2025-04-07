@@ -39,14 +39,21 @@ export function setupAuth(app: Express) {
       secure: true,
       sameSite: 'none',
       path: '/',
-      httpOnly: true
+      httpOnly: true,
+      domain: '.onrender.com'
     }
   };
 
   app.set("trust proxy", 1);
   app.use((req, res, next) => {
+    const allowedOrigins = ['https://cakecraft-su1t.onrender.com', 'http://localhost:5000'];
+    const origin = req.headers.origin;
+    
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+    
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
     next();
