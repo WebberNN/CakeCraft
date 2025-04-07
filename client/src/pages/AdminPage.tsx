@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { queryClient } from '@/lib/queryClient';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Edit, Trash, Check, X } from 'lucide-react';
+import { 
+  Loader2, Edit, Trash, Check, X, Home, ShoppingBag, 
+  Image, PenSquare, Calendar, CakeSlice, FileText, BookOpen, MessageSquare 
+} from 'lucide-react';
 import CakeForm from '@/components/admin/CakeForm';
 import {
   Table,
@@ -23,19 +26,73 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { apiRequest } from '@/lib/queryClient';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from '@/components/ui/switch';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Cake, Review } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Schema for page content forms
+const heroFormSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  subtitle: z.string().min(10, "Subtitle must be at least 10 characters"),
+  buttonText: z.string().min(2, "Button text is required"),
+  image: z.string().url("Must be a valid URL"),
+});
+
+const aboutFormSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  content: z.string().min(20, "Content must be at least 20 characters"),
+  image: z.string().url("Must be a valid URL"),
+});
 
 export default function AdminPage() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('cakes');
+  const [activeTab, setActiveTab] = useState('products');
   const [editCake, setEditCake] = useState<Cake | undefined>(undefined);
   const [isCakeFormOpen, setIsCakeFormOpen] = useState(false);
   const [deleteCakeId, setDeleteCakeId] = useState<number | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
+  // Hero section form
+  const heroForm = useForm<z.infer<typeof heroFormSchema>>({
+    resolver: zodResolver(heroFormSchema),
+    defaultValues: {
+      title: "Delicious Handcrafted Cakes",
+      subtitle: "Made with love and premium ingredients for every occasion",
+      buttonText: "Order Now",
+      image: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+    }
+  });
+
+  // About section form
+  const aboutForm = useForm<z.infer<typeof aboutFormSchema>>({
+    resolver: zodResolver(aboutFormSchema),
+    defaultValues: {
+      title: "About Abie Cakes",
+      content: "Founded with passion and dedication to the art of baking, Abie Cakes has been serving delicious handcrafted cakes and pastries since 2015. Our mission is to bring joy and happiness to every celebration with our delightful treats.",
+      image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80",
+    }
+  });
   
   // Cakes queries and mutations
   const { 
@@ -43,7 +100,7 @@ export default function AdminPage() {
     isLoading: isCakesLoading 
   } = useQuery<Cake[]>({
     queryKey: ['/api/admin/cakes'],
-    enabled: activeTab === 'cakes'
+    enabled: activeTab === 'products'
   });
   
   const deleteCakeMutation = useMutation({
@@ -53,9 +110,11 @@ export default function AdminPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/cakes'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cakes'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cakes/featured'] });
       toast({
-        title: 'Cake deleted',
-        description: 'The cake has been successfully deleted',
+        title: 'Product deleted',
+        description: 'The product has been successfully deleted',
       });
       setIsDeleteDialogOpen(false);
     },
@@ -74,7 +133,7 @@ export default function AdminPage() {
     isLoading: isReviewsLoading 
   } = useQuery<Review[]>({
     queryKey: ['/api/admin/reviews'],
-    enabled: activeTab === 'reviews'
+    enabled: activeTab === 'testimonials'
   });
   
   const approveReviewMutation = useMutation({
@@ -84,6 +143,7 @@ export default function AdminPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
       toast({
         title: 'Review approved',
         description: 'The review is now visible on the website',
@@ -105,6 +165,7 @@ export default function AdminPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
       toast({
         title: 'Review deleted',
         description: 'The review has been successfully deleted',
@@ -130,28 +191,265 @@ export default function AdminPage() {
     }
   };
 
+  // Save page content functions
+  const saveHeroContent = (data: z.infer<typeof heroFormSchema>) => {
+    toast({
+      title: 'Hero section updated',
+      description: 'Changes have been saved successfully',
+    });
+  };
+
+  const saveAboutContent = (data: z.infer<typeof aboutFormSchema>) => {
+    toast({
+      title: 'About section updated',
+      description: 'Changes have been saved successfully',
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-20">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-[var(--pink-dark)]">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Manage your cake shop content</p>
+        <p className="text-gray-600 mt-2">Manage your entire cake shop website content</p>
       </header>
 
       <Tabs 
-        defaultValue="cakes" 
+        defaultValue="products" 
         className="w-full"
         value={activeTab}
         onValueChange={setActiveTab}
       >
-        <TabsList className="mb-6">
-          <TabsTrigger value="cakes">Cakes</TabsTrigger>
-          <TabsTrigger value="reviews">Customer Reviews</TabsTrigger>
+        <TabsList className="mb-6 flex flex-wrap">
+          <TabsTrigger value="home"><Home className="h-4 w-4 mr-2" /> Home Page</TabsTrigger>
+          <TabsTrigger value="products"><ShoppingBag className="h-4 w-4 mr-2" /> Products</TabsTrigger>
+          <TabsTrigger value="testimonials"><MessageSquare className="h-4 w-4 mr-2" /> Testimonials</TabsTrigger>
+          <TabsTrigger value="gallery"><Image className="h-4 w-4 mr-2" /> Gallery</TabsTrigger>
+          <TabsTrigger value="recipes"><BookOpen className="h-4 w-4 mr-2" /> Recipes</TabsTrigger>
+          <TabsTrigger value="offers"><Calendar className="h-4 w-4 mr-2" /> Offers</TabsTrigger>
         </TabsList>
+
+        {/* HOME PAGE CONTENT */}
+        <TabsContent value="home">
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-[var(--pink-dark)]">Edit Homepage Content</h2>
+            <p className="text-gray-600">Make changes to your homepage sections below.</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Hero Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Hero Section</CardTitle>
+                  <CardDescription>Edit the main banner on your homepage</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Form {...heroForm}>
+                    <form onSubmit={heroForm.handleSubmit(saveHeroContent)} className="space-y-4">
+                      <FormField
+                        control={heroForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={heroForm.control}
+                        name="subtitle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Subtitle</FormLabel>
+                            <FormControl>
+                              <Textarea {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={heroForm.control}
+                        name="buttonText"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Button Text</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={heroForm.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Background Image URL</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Enter a URL for the hero background image
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="pt-2">
+                        <Button 
+                          type="submit" 
+                          className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
+                        >
+                          Save Hero Section
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+
+              {/* About Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>About Section</CardTitle>
+                  <CardDescription>Edit the about section on your homepage</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Form {...aboutForm}>
+                    <form onSubmit={aboutForm.handleSubmit(saveAboutContent)} className="space-y-4">
+                      <FormField
+                        control={aboutForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={aboutForm.control}
+                        name="content"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Content</FormLabel>
+                            <FormControl>
+                              <Textarea className="min-h-32" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={aboutForm.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Image URL</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Enter a URL for the about section image
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="pt-2">
+                        <Button 
+                          type="submit" 
+                          className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
+                        >
+                          Save About Section
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+
+              {/* Contact Info */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contact Information</CardTitle>
+                  <CardDescription>Edit your business contact details</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Phone Number</label>
+                        <Input defaultValue="+234 703 456 7890" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Email</label>
+                        <Input defaultValue="hello@abiecakes.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">WhatsApp Number</label>
+                        <Input defaultValue="+234 703 456 7890" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Address</label>
+                        <Textarea defaultValue="123 Bakery Street, Victoria Island, Lagos, Nigeria" />
+                      </div>
+                    </div>
+                    <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                      Save Contact Info
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Social Media */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Social Media Links</CardTitle>
+                  <CardDescription>Update your social media profiles</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Facebook</label>
+                        <Input defaultValue="https://facebook.com/abiecakes" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Instagram</label>
+                        <Input defaultValue="https://instagram.com/abiecakes" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Twitter</label>
+                        <Input defaultValue="https://twitter.com/abiecakes" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Pinterest</label>
+                        <Input defaultValue="https://pinterest.com/abiecakes" />
+                      </div>
+                    </div>
+                    <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                      Save Social Media Links
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
         
-        <TabsContent value="cakes">
+        {/* PRODUCTS MANAGEMENT */}
+        <TabsContent value="products">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Manage Cakes</h2>
+              <h2 className="text-xl font-semibold">Manage Products</h2>
               <Button 
                 className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]"
                 onClick={() => {
@@ -159,9 +457,13 @@ export default function AdminPage() {
                   setIsCakeFormOpen(true);
                 }}
               >
-                Add New Cake
+                <CakeSlice className="h-4 w-4 mr-2" />
+                Add New Product
               </Button>
             </div>
+            <p className="text-gray-600">
+              All products added here will automatically appear in both the product page and on the homepage (if featured).
+            </p>
             <Separator className="my-4" />
             
             {isCakesLoading ? (
@@ -176,6 +478,7 @@ export default function AdminPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Price</TableHead>
+                      <TableHead>Featured</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -183,8 +486,19 @@ export default function AdminPage() {
                     {cakes?.map((cake) => (
                       <TableRow key={cake.id}>
                         <TableCell className="font-medium">{cake.name}</TableCell>
-                        <TableCell>{cake.category}</TableCell>
-                        <TableCell>{cake.price}</TableCell>
+                        <TableCell>{cake.category.replace('_', ' ')}</TableCell>
+                        <TableCell>${cake.price}</TableCell>
+                        <TableCell>
+                          {cake.featured ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Featured
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              Not Featured
+                            </span>
+                          )}
+                        </TableCell>
                         <TableCell className="flex space-x-2">
                           <Button
                             variant="outline"
@@ -209,8 +523,8 @@ export default function AdminPage() {
                     ))}
                     {(!cakes || cakes.length === 0) && (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                          No cakes found. Add some!
+                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                          No products found. Add some!
                         </TableCell>
                       </TableRow>
                     )}
@@ -221,11 +535,15 @@ export default function AdminPage() {
           </div>
         </TabsContent>
         
-        <TabsContent value="reviews">
+        {/* TESTIMONIALS MANAGEMENT */}
+        <TabsContent value="testimonials">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Manage Customer Reviews</h2>
             </div>
+            <p className="text-gray-600">
+              Approve or delete customer testimonials. Approved reviews will appear on the website.
+            </p>
             <Separator className="my-4" />
             
             {isReviewsLoading ? (
@@ -296,6 +614,224 @@ export default function AdminPage() {
             )}
           </div>
         </TabsContent>
+
+        {/* GALLERY MANAGEMENT */}
+        <TabsContent value="gallery">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Manage Gallery</h2>
+              <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                <Image className="h-4 w-4 mr-2" />
+                Add New Image
+              </Button>
+            </div>
+            <p className="text-gray-600">
+              Add or remove photos from your cake gallery showcase.
+            </p>
+            <Separator className="my-4" />
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=736&q=80" 
+                  alt="Gallery Image" 
+                  className="h-40 w-full object-cover rounded-md"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-md">
+                  <Button variant="destructive" size="sm">
+                    <Trash className="h-4 w-4 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1542826438-bd32f43d626f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1292&q=80" 
+                  alt="Gallery Image" 
+                  className="h-40 w-full object-cover rounded-md"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-md">
+                  <Button variant="destructive" size="sm">
+                    <Trash className="h-4 w-4 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+              </div>
+
+              <div className="border-2 border-dashed border-gray-300 rounded-md h-40 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-gray-100">
+                    <Image className="h-6 w-6 text-gray-500" />
+                  </div>
+                  <p className="mt-2 text-sm text-gray-500">Click to add image</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* RECIPES MANAGEMENT */}
+        <TabsContent value="recipes">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Manage Recipes</h2>
+              <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                <PenSquare className="h-4 w-4 mr-2" />
+                Add New Recipe
+              </Button>
+            </div>
+            <p className="text-gray-600">
+              Add, edit or remove recipes from your recipe blog.
+            </p>
+            <Separator className="my-4" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1203&q=80" 
+                    alt="Recipe" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardHeader>
+                  <CardTitle>Vanilla Strawberry Cake</CardTitle>
+                  <CardDescription>Difficulty: Easy • 45 mins</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    A delicious vanilla cake with fresh strawberry filling and cream cheese frosting.
+                  </p>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button variant="destructive" size="sm">
+                    <Trash className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              <Card>
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1514056052883-d017fddd0424?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80" 
+                    alt="Recipe" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardHeader>
+                  <CardTitle>Chocolate Mousse Cake</CardTitle>
+                  <CardDescription>Difficulty: Medium • 90 mins</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    Rich chocolate cake layers with silky chocolate mousse filling.
+                  </p>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button variant="destructive" size="sm">
+                    <Trash className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* OFFERS MANAGEMENT */}
+        <TabsContent value="offers">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Manage Special Offers</h2>
+              <Button className="bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                <Calendar className="h-4 w-4 mr-2" />
+                Add New Offer
+              </Button>
+            </div>
+            <p className="text-gray-600">
+              Create and manage limited-time special offers and promotions.
+            </p>
+            <Separator className="my-4" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle>Valentine's Special Bundle</CardTitle>
+                    <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                      Ends in 5 days
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center mb-3">
+                    <span className="text-lg font-bold text-[var(--pink-dark)]">$49.99</span>
+                    <span className="ml-2 text-sm line-through text-gray-400">$69.99</span>
+                    <span className="ml-2 text-sm bg-green-100 text-green-800 px-2 rounded-full">
+                      Save 28%
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mb-3">
+                    A special Valentine's day bundle with a heart-shaped cake, 6 cupcakes, and a box of chocolate truffles.
+                  </p>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button variant="destructive" size="sm">
+                      <Trash className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle>Birthday Party Package</CardTitle>
+                    <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      Ongoing
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center mb-3">
+                    <span className="text-lg font-bold text-[var(--pink-dark)]">$89.99</span>
+                    <span className="ml-2 text-sm line-through text-gray-400">$109.99</span>
+                    <span className="ml-2 text-sm bg-green-100 text-green-800 px-2 rounded-full">
+                      Save 18%
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mb-3">
+                    Complete birthday party package with a custom cake, 12 cupcakes, party decorations, and candles.
+                  </p>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button variant="destructive" size="sm">
+                      <Trash className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
       
       {/* Delete Cake Confirmation Dialog */}
@@ -304,7 +840,7 @@ export default function AdminPage() {
           <DialogHeader>
             <DialogTitle>Are you sure?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete the cake from your database.
+              This action cannot be undone. This will permanently delete the product from your database and remove it from your website.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

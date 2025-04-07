@@ -11,13 +11,13 @@ export default function ProductsPage() {
   const { addToCart } = useCart();
   
   // Helper function to handle type compatibility with Cake object
-  const handleAddToCart = (cake: any) => {
-    // Ensure tag is properly handled as it could be null in DB but undefined in type
-    const safeTag = cake.tag === null ? undefined : cake.tag;
-    addToCart({
+  const handleAddToCart = (cake: Cake) => {
+    // Convert to a safe cake object for cart
+    const safeCake = {
       ...cake,
-      tag: safeTag
-    });
+      tag: cake.tag === null ? undefined : cake.tag
+    };
+    addToCart(safeCake);
   };
   
   const { data: cakes, isLoading } = useQuery<Cake[]>({
