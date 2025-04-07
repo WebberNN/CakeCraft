@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { 
-  Loader2, Edit, Trash, Check, X, Home, ShoppingBag, 
+  Loader2, Edit, Trash, Check, X, Home, ShoppingBag, Upload, 
   Image, PenSquare, Calendar, CakeSlice, FileText, BookOpen, MessageSquare 
 } from 'lucide-react';
 import CakeForm from '@/components/admin/CakeForm';
@@ -207,11 +207,127 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-20">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-[var(--pink-dark)]">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Manage your entire cake shop website content</p>
+    <div className="mx-auto px-4 py-20 max-w-7xl">
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-[var(--pink-dark)]">Admin Dashboard</h1>
+          <p className="text-gray-600 mt-2">Manage your entire cake shop website content</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.href = "/"} 
+            className="flex items-center gap-2"
+          >
+            <Home className="h-4 w-4" /> View Website
+          </Button>
+        </div>
       </header>
+      
+      <div className="mb-12 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold text-[var(--pink-dark)] mb-4">Brand Settings</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Logo</CardTitle>
+              <CardDescription>Upload your business logo</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center justify-center gap-4">
+                <div className="w-32 h-32 bg-pink-50 rounded-lg flex items-center justify-center">
+                  <img 
+                    src="/logo.png" 
+                    alt="Logo Preview" 
+                    className="max-w-full max-h-full"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://placehold.co/200x200/fff5f7/e83e8c?text=Abie+Cakes";
+                    }}
+                  />
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  <Upload className="h-4 w-4 mr-2" /> Upload Logo
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Currency</CardTitle>
+              <CardDescription>Set your preferred currency</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="currency-naira"
+                    name="currency"
+                    className="h-4 w-4 text-[var(--pink-dark)]"
+                    defaultChecked
+                  />
+                  <label htmlFor="currency-naira" className="text-sm font-medium">
+                    Naira (₦)
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="currency-dollar"
+                    name="currency"
+                    className="h-4 w-4 text-[var(--pink-dark)]"
+                  />
+                  <label htmlFor="currency-dollar" className="text-sm font-medium">
+                    US Dollar ($)
+                  </label>
+                </div>
+                <Button className="w-full mt-2 bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                  Save Currency Setting
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Website Theme</CardTitle>
+              <CardDescription>Customize your website colors</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-5 gap-2">
+                  <div 
+                    className="w-full aspect-square rounded-full bg-pink-500 cursor-pointer border-2 border-white hover:border-gray-300"
+                    title="Pink"
+                  ></div>
+                  <div 
+                    className="w-full aspect-square rounded-full bg-purple-500 cursor-pointer border-2 border-white hover:border-gray-300"
+                    title="Purple"
+                  ></div>
+                  <div 
+                    className="w-full aspect-square rounded-full bg-blue-500 cursor-pointer border-2 border-white hover:border-gray-300"
+                    title="Blue"
+                  ></div>
+                  <div 
+                    className="w-full aspect-square rounded-full bg-green-500 cursor-pointer border-2 border-white hover:border-gray-300"
+                    title="Green"
+                  ></div>
+                  <div 
+                    className="w-full aspect-square rounded-full bg-orange-500 cursor-pointer border-2 border-white hover:border-gray-300"
+                    title="Orange"
+                  ></div>
+                </div>
+                <Button className="w-full bg-[var(--pink-dark)] hover:bg-[var(--pink)]">
+                  Apply Theme
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       <Tabs 
         defaultValue="products" 
@@ -219,10 +335,10 @@ export default function AdminPage() {
         value={activeTab}
         onValueChange={setActiveTab}
       >
-        <TabsList className="mb-6 flex flex-wrap">
-          <TabsTrigger value="home"><Home className="h-4 w-4 mr-2" /> Home Page</TabsTrigger>
+        <TabsList className="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
+          <TabsTrigger value="home"><Home className="h-4 w-4 mr-2" /> Home</TabsTrigger>
           <TabsTrigger value="products"><ShoppingBag className="h-4 w-4 mr-2" /> Products</TabsTrigger>
-          <TabsTrigger value="testimonials"><MessageSquare className="h-4 w-4 mr-2" /> Testimonials</TabsTrigger>
+          <TabsTrigger value="testimonials"><MessageSquare className="h-4 w-4 mr-2" /> Reviews</TabsTrigger>
           <TabsTrigger value="gallery"><Image className="h-4 w-4 mr-2" /> Gallery</TabsTrigger>
           <TabsTrigger value="recipes"><BookOpen className="h-4 w-4 mr-2" /> Recipes</TabsTrigger>
           <TabsTrigger value="offers"><Calendar className="h-4 w-4 mr-2" /> Offers</TabsTrigger>

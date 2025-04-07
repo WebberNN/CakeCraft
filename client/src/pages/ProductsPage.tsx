@@ -97,7 +97,7 @@ export default function ProductsPage() {
                         <h3 className="font-bold text-gray-800 text-lg mb-1">{cake.name}</h3>
                         <p className="text-gray-600 text-sm mb-3 line-clamp-2 flex-1">{cake.description}</p>
                         <div className="flex justify-between items-center">
-                          <span className="font-bold text-[var(--pink-dark)]">${cake.price}</span>
+                          <span className="font-bold text-[var(--pink-dark)]">₦{cake.price}</span>
                           <Button 
                             size="sm" 
                             className="bg-[var(--pink-dark)] hover:bg-[var(--pink)] text-white"

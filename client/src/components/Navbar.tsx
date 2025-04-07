@@ -70,15 +70,13 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
           {/* Cart component */}
           <Cart />
           
-          {/* Admin/Auth links (visible on desktop) */}
+          {/* Admin link if user is logged in (visible on desktop) */}
           <div className="hidden md:block">
-            {user ? (
+            {user && user.isAdmin && (
               <div className="flex items-center space-x-3">
-                {user.isAdmin && (
-                  <Link href="/admin" className="text-[var(--pink-dark)] font-medium">
-                    Admin
-                  </Link>
-                )}
+                <Link href="/admin" className="text-[var(--pink-dark)] font-medium">
+                  Admin
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300"
@@ -86,10 +84,6 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
                   Logout
                 </button>
               </div>
-            ) : (
-              <Link href="/auth" className="text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300">
-                Login
-              </Link>
             )}
           </div>
           
@@ -133,19 +127,17 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
               Order Now
             </a>
             
-            {/* Auth links for mobile menu */}
-            <div className="py-2 border-b border-[var(--gray)]">
-              {user ? (
+            {/* Admin link for mobile menu (only shown if logged in as admin) */}
+            {user && user.isAdmin && (
+              <div className="py-2 border-b border-[var(--gray)]">
                 <div className="flex flex-col space-y-2">
-                  {user.isAdmin && (
-                    <Link 
-                      href="/admin" 
-                      onClick={closeMobileMenu}
-                      className="text-[var(--pink-dark)] font-medium"
-                    >
-                      Admin Dashboard
-                    </Link>
-                  )}
+                  <Link 
+                    href="/admin" 
+                    onClick={closeMobileMenu}
+                    className="text-[var(--pink-dark)] font-medium"
+                  >
+                    Admin Dashboard
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="text-left text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300"
@@ -153,16 +145,8 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
                     Logout
                   </button>
                 </div>
-              ) : (
-                <Link 
-                  href="/auth" 
-                  onClick={closeMobileMenu}
-                  className="text-gray-600 hover:text-[var(--pink-dark)] transition-colors duration-300"
-                >
-                  Login / Register
-                </Link>
-              )}
-            </div>
+              </div>
+            )}
             
             <div className="flex space-x-4 pt-2">
               <a href="https://instagram.com/abies_cake" className="text-[var(--gray-dark)] hover:text-[var(--pink-dark)] transition">

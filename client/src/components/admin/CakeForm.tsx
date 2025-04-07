@@ -229,9 +229,9 @@ export default function CakeForm({ open, onOpenChange, cake }: CakeFormProps) {
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price ($)</FormLabel>
+                  <FormLabel>Price (₦)</FormLabel>
                   <FormControl>
-                    <Input placeholder="29.99" {...field} />
+                    <Input placeholder="5000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

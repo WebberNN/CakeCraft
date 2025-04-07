@@ -139,8 +139,8 @@ const SeasonalOffers = () => {
                 
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <span className="font-bold text-lg text-[var(--pink-dark)]">{offer.price}</span>
-                    <span className="text-sm text-gray-500 line-through ml-2">{offer.originalPrice}</span>
+                    <span className="font-bold text-lg text-[var(--pink-dark)]">₦{offer.price}</span>
+                    <span className="text-sm text-gray-500 line-through ml-2">₦{offer.originalPrice}</span>
                   </div>
                   <div className="bg-[var(--pink-light)] px-3 py-1 rounded-full text-xs font-medium text-[var(--pink-dark)]">
                     Limited Time

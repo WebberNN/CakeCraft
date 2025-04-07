@@ -180,7 +180,7 @@ const Shop = () => {
                         <div className="p-6">
                           <h3 className="font-bold text-xl mb-2">{cake.name}</h3>
                           <div className="flex justify-between items-center mb-4">
-                            <span className="text-[var(--pink-dark)] font-semibold">${cake.price}</span>
+                            <span className="text-[var(--pink-dark)] font-semibold">₦{cake.price}</span>
                             {cake.tag && (
                               <span className="text-sm bg-[var(--pink-light)] text-[var(--pink-dark)] px-3 py-1 rounded-full">
                                 {cake.tag}
