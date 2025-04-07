@@ -11,6 +11,11 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BackToTop from "@/components/BackToTop";
+import CakeCustomizer from "@/components/CakeCustomizer";
+import OrderTracking from "@/components/OrderTracking";
+import SeasonalOffers from "@/components/SeasonalOffers";
+import ReviewForm from "@/components/ReviewForm";
+import RecipeBlog from "@/components/RecipeBlog";
 
 const Home = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,8 +41,13 @@ const Home = () => {
       <Hero />
       <About />
       <Shop />
+      <CakeCustomizer />
+      <SeasonalOffers />
+      <OrderTracking />
       <Gallery />
       <Testimonials />
+      <ReviewForm />
+      <RecipeBlog />
       <Blog />
       <FAQ />
       <Contact />

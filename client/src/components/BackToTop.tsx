@@ -31,7 +31,7 @@ const BackToTop = () => {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-[var(--pink-dark)] hover:bg-[var(--pink)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center focus:outline-none transition-all duration-300 transform hover:scale-110 z-30"
+          className="fixed bottom-6 right-24 bg-[var(--pink-dark)] hover:bg-[var(--pink)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center focus:outline-none transition-all duration-300 transform hover:scale-110 z-30"
           aria-label="Back to top"
           data-aos="fade-up"
           data-aos-duration="500"
