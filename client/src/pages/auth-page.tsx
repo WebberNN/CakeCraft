@@ -51,11 +51,18 @@ export default function AuthPage() {
   
   const onLoginSubmit = (values: LoginFormValues) => {
     loginMutation.mutate(values, {
-      onSuccess: () => {
+      onSuccess: (user) => {
         toast({
           title: "Login successful",
           description: "Welcome back!",
         });
+        
+        // Redirect based on user role
+        if (user.isAdmin) {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/";
+        }
       },
       onError: (error: Error) => {
         toast({
@@ -74,11 +81,14 @@ export default function AuthPage() {
     registerMutation.mutate(
       { username, password },
       {
-        onSuccess: () => {
+        onSuccess: (user) => {
           toast({
             title: "Account created",
             description: "Your account has been created successfully!",
           });
+          
+          // Redirect based on user role (new accounts are usually not admin)
+          window.location.href = user.isAdmin ? "/admin" : "/";
         },
         onError: (error: Error) => {
           toast({
@@ -93,7 +103,8 @@ export default function AuthPage() {
 
   // Redirect if user is already logged in
   if (user) {
-    return <Redirect to="/" />;
+    // Redirect admins to the admin page, regular users to home
+    return user.isAdmin ? <Redirect to="/admin" /> : <Redirect to="/" />;
   }
   
   return (

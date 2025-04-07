@@ -37,7 +37,7 @@ function Router() {
       <Route path="/offers" component={OffersPage} />
       <Route path="/quiz" component={FlavorQuizPage} />
       <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/admin" component={AdminPage} />
+      <ProtectedRoute path="/admin" component={AdminPage} adminOnly={true} />
       <Route component={NotFound} />
     </Switch>
   );
