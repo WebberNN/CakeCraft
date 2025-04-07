@@ -49,14 +49,13 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
         
         {/* Desktop menu */}
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="#home" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Home</a>
-          <a href="#about" className="hover:text-[var(--pink-dark)] transition-colors duration-300">About</a>
-          <a href="#shop" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Shop</a>
-          <a href="#gallery" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Gallery</a>
-          <a href="#testimonials" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Testimonials</a>
-          <a href="#blog" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Blog</a>
-          <a href="#faq" className="hover:text-[var(--pink-dark)] transition-colors duration-300">FAQ</a>
-          <a href="#contact" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Contact</a>
+          <Link href="/" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Home</Link>
+          <Link href="/customize" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Customize</Link>
+          <Link href="/recipes" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Recipes</Link>
+          <Link href="/gallery" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Gallery</Link>
+          <Link href="/offers" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Special Offers</Link>
+          <Link href="/track-order" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Track Order</Link>
+          <a href="/#contact" className="hover:text-[var(--pink-dark)] transition-colors duration-300">Contact</a>
         </nav>
         
         <div className="flex items-center space-x-4">
@@ -86,14 +85,13 @@ const Navbar = ({ isScrolled }: NavbarProps) => {
       <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} bg-white border-t border-[var(--gray)] transition-all duration-300`}>
         <div className="container mx-auto px-4 py-2">
           <nav className="flex flex-col space-y-3 pb-3">
-            <a href="#home" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Home</a>
-            <a href="#about" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">About</a>
-            <a href="#shop" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Shop</a>
-            <a href="#gallery" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Gallery</a>
-            <a href="#testimonials" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Testimonials</a>
-            <a href="#blog" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Blog</a>
-            <a href="#faq" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">FAQ</a>
-            <a href="#contact" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Contact</a>
+            <Link href="/" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Home</Link>
+            <Link href="/customize" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Customize</Link>
+            <Link href="/recipes" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Recipes</Link>
+            <Link href="/gallery" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Gallery</Link>
+            <Link href="/offers" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Special Offers</Link>
+            <Link href="/track-order" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Track Order</Link>
+            <a href="/#contact" onClick={closeMobileMenu} className="hover:text-[var(--pink-dark)] py-2 border-b border-[var(--gray)]">Contact</a>
             
             <a 
               href="https://wa.me/2348148048649?text=Hello%20Abie%2C%20I%20would%20like%20to%20place%20an%20order%20for%20a%20cake!"
