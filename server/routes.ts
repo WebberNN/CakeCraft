@@ -89,7 +89,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/cakes", isAdmin, async (req, res) => {
     try {
       const validatedData = insertCakeSchema.parse(req.body);
-      const cake = await storage.createCake(validatedData);
+      
+      // Convert price to number if it's a string
+      const dataToSave = {
+        ...validatedData,
+        price: typeof validatedData.price === 'string' 
+          ? parseFloat(validatedData.price) 
+          : validatedData.price
+      };
+      
+      const cake = await storage.createCake(dataToSave);
       res.status(201).json(cake);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -109,7 +118,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Partial validation of the update data
       const validatedData = insertCakeSchema.partial().parse(req.body);
       
-      const updatedCake = await storage.updateCake(id, validatedData);
+      // Process the data before updating
+      const dataToUpdate = { ...validatedData };
+      
+      // Convert price to number if it's a string and exists
+      if (dataToUpdate.price !== undefined && typeof dataToUpdate.price === 'string') {
+        dataToUpdate.price = parseFloat(dataToUpdate.price);
+      }
+      
+      const updatedCake = await storage.updateCake(id, dataToUpdate);
       if (!updatedCake) {
         return res.status(404).json({ error: "Cake not found" });
       }

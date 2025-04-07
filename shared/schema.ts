@@ -56,7 +56,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   isAdmin: true,
 });
 
-export const insertCakeSchema = createInsertSchema(cakes).pick({
+export const insertCakeSchema = createInsertSchema(cakes, {
+  price: z.union([z.string(), z.number()]),
+}).pick({
   name: true,
   price: true,
   description: true,
