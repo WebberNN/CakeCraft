@@ -1,4 +1,6 @@
 import { useState } from "react";
+// Ensure we have React imported for JSX
+import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
@@ -11,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Redirect } from "wouter";
+import { queryClient } from "../lib/queryClient";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -57,17 +60,14 @@ export default function AuthPage() {
           description: "Welcome back!",
         });
         
-        // Redirect based on user role
-        if (user.isAdmin) {
-          window.location.href = "/admin";
-        } else {
-          window.location.href = "/";
-        }
+        // Use Redirect component for proper routing instead of window.location
+        // This gets handled by the useAuth hook redirection instead
+        queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       },
       onError: (error: Error) => {
         toast({
           title: "Login failed",
-          description: error.message,
+          description: error.message || "Invalid username or password",
           variant: "destructive",
         });
       },
@@ -87,8 +87,9 @@ export default function AuthPage() {
             description: "Your account has been created successfully!",
           });
           
-          // Redirect based on user role (new accounts are usually not admin)
-          window.location.href = user.isAdmin ? "/admin" : "/";
+          // Use query invalidation instead of direct redirect
+          // Redirection will be handled by the useAuth hook
+          queryClient.invalidateQueries({ queryKey: ["/api/user"] });
         },
         onError: (error: Error) => {
           toast({

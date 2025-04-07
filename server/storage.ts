@@ -4,11 +4,11 @@ import { users, cakes, reviews,
   type Review, type InsertReview } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import connectPg from "connect-pg-simple";
 import session from "express-session";
-import { pool } from "./db";
+import createMemoryStore from "memorystore";
 
-const PostgresSessionStore = connectPg(session);
+// Use memory store instead of Postgres session store to avoid connection issues
+const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
   // User methods
@@ -40,9 +40,9 @@ export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
   
   constructor() {
-    this.sessionStore = new PostgresSessionStore({ 
-      pool: pool as any, 
-      createTableIfMissing: true 
+    // Use memory store instead of Postgres to fix connection issues
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
     });
   }
 
